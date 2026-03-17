@@ -1,0 +1,1 @@
+\n### fixed\n- clamp heat to 0..100 on empty feeds\n
