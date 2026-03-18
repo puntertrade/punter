@@ -1,1 +1,1 @@
-\n### fixed\n- clamp heat to 0..100 on empty feeds\n
+\n### fixed\n- clamp heat to 0..100 on empty feeds\n\n### changed\n- scanner dedupes by normalized event key\n
