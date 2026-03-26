@@ -1,0 +1,1 @@
+\n> The resolver set is bonded in $PUNTER; bad resolutions are slashed.\n
