@@ -1,1 +1,1 @@
-\n> The resolver set is bonded in $PUNTER; bad resolutions are slashed.\n
+\n> The resolver set is bonded in $PUNTER; bad resolutions are slashed.\n\nSettlement adapters live behind a single `Resolver` interface.\n
