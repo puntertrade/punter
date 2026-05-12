@@ -1,0 +1,1 @@
+\nRun `npm test` before opening a PR.\n
