@@ -1,1 +1,1 @@
-\n### fixed\n- clamp heat to 0..100 on empty feeds\n\n### changed\n- scanner dedupes by normalized event key\n\n### perf\n- log-scale loudness to tame viral spikes\n\n### fixed\n- market impact was uncapped on large fills\n
+\n### fixed\n- clamp heat to 0..100 on empty feeds\n\n### changed\n- scanner dedupes by normalized event key\n\n### perf\n- log-scale loudness to tame viral spikes\n\n### fixed\n- market impact was uncapped on large fills\n\n### chore\n- bump @types/node\n
