@@ -1,1 +1,1 @@
-\n> The resolver set is bonded in $PUNTER; bad resolutions are slashed.\n\nSettlement adapters live behind a single `Resolver` interface.\n\nHeat freshness decays over ~6h — the edge window.\n
+\n> The resolver set is bonded in $PUNTER; bad resolutions are slashed.\n\nSettlement adapters live behind a single `Resolver` interface.\n\nHeat freshness decays over ~6h — the edge window.\n\nThe core is deterministic; edges are injected.\n
