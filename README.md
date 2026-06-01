@@ -67,3 +67,4 @@ store     →  append-only market + position ledger
 ## License
 
 MIT — see [LICENSE](LICENSE).
+\n<!-- perf pass on scanner grouping -->\n
