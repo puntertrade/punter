@@ -1,1 +1,12 @@
-\n### fixed\n- clamp heat to 0..100 on empty feeds\n\n### changed\n- scanner dedupes by normalized event key\n\n### perf\n- log-scale loudness to tame viral spikes\n\n### fixed\n- market impact was uncapped on large fills\n\n### chore\n- bump @types/node\n\n### test\n- cover stale rumour decay\n\n### refactor\n- extract clamp helper\n\n### fixed\n- CLI open now appends a question mark\n\n### chore\n- tidy tsconfig, enable declaration maps\n\n### chore: release v0.1.0\n\n### chore: release v0.2.0\n
+# Changelog
+
+All notable changes are documented here. Format follows Keep a Changelog.
+
+## [0.2.0]
+- Oracle interface + manual resolver
+- Market impact model on `take`
+- CLI `scan` / `open`
+
+## [0.1.0]
+- Initial rumour scanner + heat scoring
+- Binary market framing with frozen terms
