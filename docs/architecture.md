@@ -1,1 +1,15 @@
-\n> The resolver set is bonded in $PUNTER; bad resolutions are slashed.\n\nSettlement adapters live behind a single `Resolver` interface.\n\nHeat freshness decays over ~6h — the edge window.\n\nThe core is deterministic; edges are injected.\n\nMarkets are chain-independent; settlement is a deployment detail.\n
+# Architecture
+
+Punter is a small deterministic core with pluggable edges.
+
+```
+Feed adapter ──▶ scanner ──▶ heat ──▶ frame ──▶ Market
+                                                  │
+                                     take ◀───────┤ (positions)
+                                                  ▼
+                                    Resolver ──▶ settle ──▶ payout
+```
+
+- **Core** (`src/`) is pure: given the same feed + resolver, output is identical.
+- **Edges** are injected: the CT feed, the resolver network, the settlement chain.
+- This is what makes the engine testable and chain-independent.
