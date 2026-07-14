@@ -1,20 +1,37 @@
 {
   "name": "punter",
   "version": "0.2.0",
-  "description": "Crypto rumour scanner and market engine — price the rumour before the headline.",
+  "description": "Crypto rumour scanner and market engine \u2014 price the rumour before the headline.",
   "type": "module",
-  "bin": { "punter": "dist/cli.js" },
+  "bin": {
+    "punter": "dist/cli.js"
+  },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "dev": "tsc -w -p tsconfig.json",
-    "test": "node --test"
+    "test": "npm run build && node --test tests/heat.test.ts tests/market.test.ts"
   },
-  "keywords": ["prediction-markets", "crypto", "ct", "rumours", "oracle", "typescript"],
-  "repository": { "type": "git", "url": "https://github.com/ramdany29/punter.git" },
+  "keywords": [
+    "prediction-markets",
+    "crypto",
+    "ct",
+    "rumours",
+    "oracle",
+    "typescript"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ramdany29/punter.git"
+  },
   "homepage": "https://zkpassorg.vercel.app",
   "license": "MIT",
-  "engines": { "node": ">=20" },
-  "devDependencies": { "typescript": "^5.4.0", "@types/node": "^20.11.0" }
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "@types/node": "^20.11.0"
+  }
 }

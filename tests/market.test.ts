@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { frame, take, quote } from "../src/market.js";
+import { frame, take, quote } from "../dist/market.js";
 
 test("taking YES moves the price up", () => {
   const m = frame({ id: "m", text: "will it list", source: "ct", firstSeen: Date.now(), mentions: 1, newAccounts: 0, heat: 0 }, Date.now() + 1e6);
