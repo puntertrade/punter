@@ -9,7 +9,7 @@ import { heat } from "./heat.js";
 export interface FeedItem { id: string; text: string; author: string; createdAt: number; source: string; }
 export interface Feed { pull(sinceMs: number): Promise<FeedItem[]>; }
 
-const KEYS = /\\b(list(ing|s|ed)?|launch|tge|airdrop|unlock|partnership|leak|mainnet)\\b/i;
+const KEYS = /\b(list(ing|s|ed)?|launch|tge|airdrop|unlock|partnership|leak|mainnet)\b/i;
 
 export async function scan(feed: Feed, sinceMs = Date.now() - 6 * 3_600_000): Promise<Rumour[]> {
   const items = await feed.pull(sinceMs);
@@ -36,4 +36,4 @@ export async function scan(feed: Feed, sinceMs = Date.now() - 6 * 3_600_000): Pr
 }
 
 const normalize = (t: string) =>
-  t.toLowerCase().replace(/[^a-z0-9 ]/g, "").split(/\\s+/).filter((w) => w.length > 3).slice(0, 8).join("-");
+  t.toLowerCase().replace(/[^a-z0-9 ]/g, "").split(/\s+/).filter((w) => w.length > 3).slice(0, 8).join("-");

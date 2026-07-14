@@ -4,7 +4,7 @@ import type { Market, Rumour, Position, Side } from "./types.js";
 export function frame(r: Rumour, deadlineMs: number, chain: Market["chain"] = "solana"): Market {
   return {
     id: r.id,
-    question: capitalize(r.text.trim()).replace(/\\??$/, "?"),
+    question: capitalize(r.text.trim()).replace(/\??$/, "?"),
     terms: `YES if the event described resolves true before ${new Date(deadlineMs).toISOString()}.`,
     deadline: deadlineMs,
     status: "open",
