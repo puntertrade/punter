@@ -1,1 +1,7 @@
-node_modules/\ndist/\n*.log\n.env*\n.DS_Store\n.claude/\nCLAUDE.md\n
+node_modules/
+dist/
+*.log
+.env*
+.DS_Store
+.claude/
+CLAUDE.md

@@ -4,12 +4,12 @@
 
 **Price the rumour before the headline.**
 
-The rumour engine behind [Punter](https://zkpassorg.vercel.app) — it watches Crypto Twitter, scores what's moving, and turns live launches, leaks and CT chaos into clean YES/NO markets.
+The rumour engine behind [Punter](https://puntertrade.xyz) — it watches Crypto Twitter, scores what's moving, and turns live launches, leaks and CT chaos into clean YES/NO markets.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](LICENSE)
 [![CI](https://img.shields.io/badge/CI-passing-22c55e?style=flat-square)](../../actions)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.4-3178C6?style=flat-square)](#)
-[![stars](https://img.shields.io/github/stars/ramdany29/punter?style=social)](../../stargazers)
+[![stars](https://img.shields.io/github/stars/puntertrade/punter?style=social)](../../stargazers)
 
 </div>
 
@@ -26,12 +26,31 @@ The rumour engine behind [Punter](https://zkpassorg.vercel.app) — it watches C
 
 ## Quick start
 
+Node 20+. No API key needed for the live feed — on-chain trending is pulled from
+a keyless source out of the box.
+
 ```bash
+git clone https://github.com/puntertrade/punter && cd punter
 npm install
 npm run build
-npx punter scan            # print the hot rumours right now
-npx punter open "TOKEN lists on Binance" --deadline 72h
+
+npx punter scan                       # live feed of what's moving, ranked by heat
+npx punter scan --watch               # auto-refreshing, top-style (--<sec> to set interval)
+npx punter markets                    # list the live markets you can trade
+npx punter open "$PENGU pumps 20% this week"   # open a market and take a side (YES/NO)
 ```
+
+```text
+  ◆ PUNTER  crypto markets for launches, leaks and CT chaos
+  #   HEAT                  MARKET          24H       VOL      SIGNAL
+  ──────────────────────────────────────────────────────────────────
+  1   █████████░  93        $LAB #262       +37.3%    $161.9M  6 CT mentions · 1m
+  2   ████████░░  80        $CASHCAT #190   +11.9%    $67.6M   3 CT mentions · 1m
+  3   ███████░░░  68        $BTC #1         +4.1%     $30.8B   6 CT mentions · now
+```
+
+> Set `TWITTERAPI_KEY` in your env to layer live Crypto-Twitter mention velocity
+> on top of the on-chain feed — heat then reflects what CT is actually posting.
 
 ## Architecture
 
@@ -62,7 +81,7 @@ store     →  append-only market + position ledger
 
 ## Links
 
-[Website](https://zkpassorg.vercel.app) · [Docs](https://zkpassorg.vercel.app/docs) · [@usepunterxyz](https://x.com/usepunterxyz)
+[Website](https://puntertrade.xyz) · [Docs](https://puntertrade.xyz/docs) · [@usepunterxyz](https://x.com/usepunterxyz)
 
 ## License
 
