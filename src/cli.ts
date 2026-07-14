@@ -5,6 +5,7 @@ import { c, bar, heatColor } from "./ansi.js";
 import { scanLive, fetchTrending, type Signal } from "./live.js";
 import { banner, withSpinner, renderFeed, clearScreen } from "./ui.js";
 import { runTUI } from "./tui.js";
+import * as W from "./wallet.js";
 
 async function cmdScan(watch: boolean, intervalSec: number) {
   const run = async () => {
@@ -118,15 +119,67 @@ async function cmdMarkets() {
   console.log();
 }
 
+const money = (n: number) => "$" + n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+function cmdWallet() {
+  const st = W.load();
+  stdout.write(banner());
+  if (!st.wallet) {
+    console.log("  " + c.dim("no wallet yet — run ") + c.brand("punter") + c.dim(" and create one.\n"));
+    return;
+  }
+  console.log("  " + c.dim("address  ") + c.brand(st.wallet.address));
+  console.log("  " + c.dim("USDC     ") + c.white(money(st.balances.USDC)));
+  console.log("  " + c.dim("SOL      ") + c.white(st.balances.SOL.toFixed(3) + " ◎"));
+  console.log("  " + c.dim("network  ") + c.gray("Solana devnet"));
+  console.log("  " + c.dim("positions ") + c.white(String(st.positions.length)) + "\n");
+}
+
+function cmdFaucet() {
+  const st = W.load();
+  if (!st.wallet) {
+    console.log(c.dim("no wallet yet — run `punter` and create one first."));
+    return;
+  }
+  st.balances.USDC += 1000;
+  W.log(st, "faucet", "+1,000 USDC");
+  W.save(st);
+  stdout.write(banner());
+  console.log("  " + c.green("✓ airdropped 1,000 USDC") + c.dim("  ·  balance ") + c.white(money(st.balances.USDC)) + "\n");
+}
+
+function cmdPortfolio() {
+  const st = W.load();
+  stdout.write(banner());
+  if (!st.wallet || !st.positions.length) {
+    console.log("  " + c.dim("no open positions.\n"));
+    return;
+  }
+  console.log("  " + c.dim("open positions:\n"));
+  st.positions.forEach((p) => {
+    console.log(
+      "  " + c.white(`$${p.ticker}`.padEnd(10)) +
+      (p.side === "YES" ? c.green("YES") : c.red("NO ")) +
+      c.dim("  @ ") + c.white(`${p.entry}¢`) +
+      c.dim("   size ") + c.white(money(p.size)) +
+      c.dim("   shares ") + c.white(p.shares.toFixed(1)),
+    );
+  });
+  console.log();
+}
+
 function help() {
   console.log(banner());
   console.log("  " + c.white(c.bold("punter")) + c.dim(" — price the rumour before the headline\n"));
   const rows: [string, string][] = [
-    ["punter", "interactive mode — browse the live feed, open markets, take a side"],
+    ["punter", "interactive mode — wallet, live feed, open markets, portfolio"],
     ["punter scan", "one-shot feed of what's moving on CT + on-chain, ranked by heat"],
     ["punter scan --watch [--sec]", "auto-refreshing feed (like top) — default 12s"],
     ["punter markets", "list live markets you can trade"],
     ['punter open "<question>"', "open one market by name and take a side"],
+    ["punter wallet", "show your wallet address + balance"],
+    ["punter faucet", "claim 1,000 test USDC"],
+    ["punter portfolio", "list your open positions"],
     ["punter help", "this"],
   ];
   for (const [cmd, desc] of rows) console.log("  " + c.brand(cmd.padEnd(30)) + c.dim(desc));
@@ -158,6 +211,13 @@ async function main() {
         return await cmdOpen(args.join(" "));
       case "markets":
         return await cmdMarkets();
+      case "wallet":
+        return cmdWallet();
+      case "faucet":
+        return cmdFaucet();
+      case "portfolio":
+      case "positions":
+        return cmdPortfolio();
       case "help":
       case "--help":
       case "-h":
