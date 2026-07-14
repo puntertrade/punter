@@ -4,6 +4,7 @@ import { stdin, stdout } from "node:process";
 import { c, bar, heatColor } from "./ansi.js";
 import { scanLive, fetchTrending, type Signal } from "./live.js";
 import { banner, withSpinner, renderFeed, clearScreen } from "./ui.js";
+import { runTUI } from "./tui.js";
 
 async function cmdScan(watch: boolean, intervalSec: number) {
   const run = async () => {
@@ -121,10 +122,11 @@ function help() {
   console.log(banner());
   console.log("  " + c.white(c.bold("punter")) + c.dim(" — price the rumour before the headline\n"));
   const rows: [string, string][] = [
-    ["punter scan", "live feed of what's moving on CT + on-chain, ranked by heat"],
+    ["punter", "interactive mode — browse the live feed, open markets, take a side"],
+    ["punter scan", "one-shot feed of what's moving on CT + on-chain, ranked by heat"],
     ["punter scan --watch [--sec]", "auto-refreshing feed (like top) — default 12s"],
     ["punter markets", "list live markets you can trade"],
-    ['punter open "<question>"', "open a market and take a side (interactive)"],
+    ['punter open "<question>"', "open one market by name and take a side"],
     ["punter help", "this"],
   ];
   for (const [cmd, desc] of rows) console.log("  " + c.brand(cmd.padEnd(30)) + c.dim(desc));
@@ -146,13 +148,16 @@ async function main() {
 
   try {
     switch (cmd) {
+      case undefined:
+      case "live":
+      case "tui":
+        return await runTUI();
       case "scan":
         return await cmdScan(watch, interval);
       case "open":
         return await cmdOpen(args.join(" "));
       case "markets":
         return await cmdMarkets();
-      case undefined:
       case "help":
       case "--help":
       case "-h":

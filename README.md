@@ -34,10 +34,20 @@ git clone https://github.com/puntertrade/punter && cd punter
 npm install
 npm run build
 
-npx punter scan                       # live feed of what's moving, ranked by heat
+npx punter                            # interactive — browse the live feed, open a market, take a side
+```
+
+Inside interactive mode: `↑/↓` move through the feed, `enter` opens the
+selected market, `←/→` or `y/n` pick YES/NO, type your size and `enter` to fill,
+`r` refreshes, `q` quits. No flags, no copy-pasting tickers.
+
+Prefer one-shot commands? They all still work:
+
+```bash
+npx punter scan                       # print the feed once, ranked by heat
 npx punter scan --watch               # auto-refreshing, top-style (--<sec> to set interval)
 npx punter markets                    # list the live markets you can trade
-npx punter open "$PENGU pumps 20% this week"   # open a market and take a side (YES/NO)
+npx punter open "$PENGU pumps 20% this week"   # open one market by name and take a side
 ```
 
 ```text
