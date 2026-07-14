@@ -31,24 +31,28 @@ a keyless source out of the box.
 
 ```bash
 git clone https://github.com/puntertrade/punter && cd punter
-npm install
-npm run build
+npm install                           # postinstall builds it for you
 
-npx punter                            # interactive — browse the live feed, open a market, take a side
+npm start                             # interactive — browse the live feed, open a market, take a side
 ```
 
 Inside interactive mode: `↑/↓` move through the feed, `enter` opens the
 selected market, `←/→` or `y/n` pick YES/NO, type your size and `enter` to fill,
 `r` refreshes, `q` quits. No flags, no copy-pasting tickers.
 
-Prefer one-shot commands? They all still work:
+Want a global `punter` command? Link it once, then call it from anywhere:
 
 ```bash
-npx punter scan                       # print the feed once, ranked by heat
-npx punter scan --watch               # auto-refreshing, top-style (--<sec> to set interval)
-npx punter markets                    # list the live markets you can trade
-npx punter open "$PENGU pumps 20% this week"   # open one market by name and take a side
+npm link                              # creates a global `punter`
+punter                                # interactive mode
+punter scan                           # print the feed once, ranked by heat
+punter scan --watch                   # auto-refreshing, top-style (--<sec> to set interval)
+punter markets                        # list the live markets you can trade
+punter open "$PENGU pumps 20% this week"   # open one market by name and take a side
 ```
+
+> `npx punter` won't work from inside this repo — npx looks up the npm registry,
+> and Punter isn't published there. Use `npm start` or `npm link` above.
 
 ```text
   ◆ PUNTER  crypto markets for launches, leaks and CT chaos
