@@ -17,8 +17,13 @@ type Mode =
 const SPIN = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"];
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 const clamp = (x: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, x));
-const rand = (n: number) =>
-  Array.from({ length: n }, () => "0123456789abcdef"[Math.floor(Math.random() * 16)]).join("");
+
+// Solana-style identifiers: base58, addresses ~44 chars, signatures ~88.
+const B58 = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+const b58 = (n: number) => Array.from({ length: n }, () => B58[Math.floor(Math.random() * 58)]).join("");
+const shortSig = (s: string) => (s.length > 12 ? s.slice(0, 5) + "…" + s.slice(-4) : s);
+const PROGRAM_ID = "PUNTrLhvf2rNE44Dirm5ZrZxnni1VNrvjAg3Dt3MMoHR";
+const USDC_MINT = "AzD8HqWKKWUqWJr7EEjHrhin1asuetCFoEEkg7EEMcf7"; // devnet
 const money = (n: number) => "$" + n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const shortAddr = (a: string) => a.slice(0, 4) + "…" + a.slice(-4);
 function fmtVol(v: number) {
@@ -47,6 +52,7 @@ export async function runTUI(): Promise<void> {
   let posSel = 0;
   let cur: Signal | null = null;
   let curId = "";
+  let blockhash = "";
   let side: "YES" | "NO" = "YES";
   let sizeBuf = "";
   let status = "";
@@ -195,7 +201,7 @@ export async function runTUI(): Promise<void> {
     const s = cur!;
     const yes = pxYes(s), no = 100 - yes;
     const L = [banner()];
-    L.push("  " + c.dim("MARKET  " + curId) + c.dim("   heat ") + heatColor(s.heat)(String(s.heat)) + c.dim("   vol ") + c.gray(fmtVol(s.volume)));
+    L.push("  " + c.dim("MARKET  " + shortSig(curId)) + c.dim("   heat ") + heatColor(s.heat)(String(s.heat)) + c.dim("   vol ") + c.gray(fmtVol(s.volume)));
     L.push("  " + c.white(c.bold(`Will $${s.ticker} keep pumping over the next 72h?`)));
     L.push("  " + c.dim("terms   ") + c.gray("YES if price is higher 72h from open · oracle: Pyth + CT consensus"));
     L.push("");
@@ -265,13 +271,22 @@ export async function runTUI(): Promise<void> {
   function fSign() {
     const s = cur!;
     const n = reviewNums();
+    const netFee = 0.000005 + 0.000005; // base + priority, ◎
     const L = [banner()];
-    L.push("  " + c.white(c.bold("Signature request")) + c.dim("   " + shortAddr(st.wallet!.address)));
+    L.push("  " + c.white(c.bold("Approve transaction")) + c.dim("   Solana devnet"));
     L.push("  " + rule());
-    L.push("  " + c.gray("Program   ") + c.white("PUNTERmkt1111111111111111111111111111111111"));
-    L.push("  " + c.gray("Instruction ") + c.white(`take_position(${side}, ${n.size} USDC)`));
-    L.push("  " + c.gray("Debit     ") + c.white(money(n.total)) + c.dim("  (size + fee + slippage)"));
-    L.push("  " + c.gray("Market    ") + c.dim(curId));
+    const row = (k: string, v: string) => "  " + padVisible(c.gray(k), 15) + v;
+    L.push(row("Program", c.white(shortSig(PROGRAM_ID)) + c.dim("  Punter Markets")));
+    L.push(row("Instruction", c.white("takePosition")));
+    L.push(row("  side", (side === "YES" ? c.green : c.red)(side)));
+    L.push(row("  amount", c.white(`${n.size.toFixed(2)} USDC`) + c.dim(`  (${USDC_MINT.slice(0, 4)}…)`)));
+    L.push(row("  maxSlippage", c.white("50 bps")));
+    L.push(row("  market", c.dim(shortSig(curId))));
+    L.push("  " + rule());
+    L.push(row("Fee payer", c.brand(shortSig(st.wallet!.address))));
+    L.push(row("Network fee", c.gray(`${netFee.toFixed(6)} ◎`) + c.dim("  ~$" + (netFee * 150).toFixed(4))));
+    L.push(row("Debit", c.white(money(n.total)) + c.dim("  amount + fee + est. slippage")));
+    L.push(row("Blockhash", c.dim(shortSig(blockhash))));
     L.push("  " + rule());
     L.push("");
     L.push("  " + c.dim("s") + c.gray(" sign with wallet   ") + c.dim("b") + c.gray(" reject"));
@@ -284,7 +299,7 @@ export async function runTUI(): Promise<void> {
     L.push("  " + (p.side === "YES" ? c.green : c.red)(c.bold(`✓ FILLED  ${p.side}  $${p.ticker}`)));
     L.push("  " + c.dim("price   ") + c.white(`${p.entry}¢`) + c.dim("   size ") + c.white(money(p.size)) + c.dim("   shares ") + c.white(p.shares.toFixed(1)));
     L.push("  " + c.dim("payout  ") + c.green(money(p.shares)) + c.dim(` if ${p.side}`) + c.dim("   ·   non-custodial"));
-    L.push("  " + c.dim("tx      ") + c.cyan(p.tx) + c.dim("   ·   Solana devnet"));
+    L.push("  " + c.dim("tx      ") + c.cyan(shortSig(p.tx)) + c.dim("   ·   Solana devnet"));
     L.push("  " + c.dim("balance ") + c.white(money(st.balances.USDC)));
     L.push("");
     L.push("  " + c.dim("p") + c.gray(" view portfolio   ") + c.dim("b") + c.gray(" back to markets   ") + c.dim("q") + c.gray(" quit"));
@@ -351,7 +366,7 @@ export async function runTUI(): Promise<void> {
     L.push(row("shares", c.white(p.shares.toFixed(1))));
     L.push(row("value", c.white(money(value))));
     L.push(row("PnL", (pnl >= 0 ? c.green : c.red)(`${pnl >= 0 ? "+" : ""}${money(pnl)}`)));
-    L.push(row("tx", c.cyan(p.tx)));
+    L.push(row("tx", c.cyan(shortSig(p.tx))));
     L.push("  " + rule());
     L.push("");
     L.push("  " + c.dim("c") + c.gray(" close position   ") + c.dim("b") + c.gray(" back"));
@@ -497,7 +512,7 @@ export async function runTUI(): Promise<void> {
         await broadcast("Requesting airdrop from devnet faucet", [
           "connecting to faucet.punter.xyz",
           "requesting 1,000 USDC + 2 SOL",
-          "airdrop tx " + "0x" + rand(8),
+          "airdrop tx " + shortSig(b58(88)),
           "confirming (32/32 slots)",
         ]);
         st.balances.USDC += 1000; st.balances.SOL += 2;
@@ -514,7 +529,7 @@ export async function runTUI(): Promise<void> {
       const n = Math.min(12, signals.length) || 1;
       if (key.name === "up" || str === "k") sel = (sel - 1 + n) % n;
       else if (key.name === "down" || str === "j") sel = (sel + 1) % n;
-      else if (key.name === "return") { cur = signals[sel]; curId = "0x" + rand(6) + "…" + rand(4); side = "YES"; mode = "market"; }
+      else if (key.name === "return") { cur = signals[sel]; curId = b58(44); side = "YES"; mode = "market"; }
       else if (str === "p") { posSel = 0; mode = "portfolio"; }
       else if (str === "w") mode = "wallet";
       else if (str === "r") { await refresh(); }
@@ -543,6 +558,7 @@ export async function runTUI(): Promise<void> {
       const n = reviewNums();
       if (key.name === "return") {
         if (st.balances.USDC < n.total) { status = "insufficient balance"; return render(); }
+        blockhash = b58(44);
         mode = "sign";
       } else if (str === "e") mode = "size";
       else if (str === "b" || key.name === "escape") mode = "market";
@@ -551,16 +567,18 @@ export async function runTUI(): Promise<void> {
     if (mode === "sign") {
       if (str === "s") {
         const n = reviewNums();
-        await broadcast("Submitting order to Solana", [
-          "building transaction",
-          "signing with " + shortAddr(st.wallet!.address),
-          "sending to RPC",
-          "matching against the book",
-          "confirming (32/32 slots)",
+        const sig = b58(88);
+        await broadcast("Submitting transaction", [
+          "simulating against " + shortSig(PROGRAM_ID),
+          "signing with " + shortSig(st.wallet!.address),
+          "sending to devnet RPC",
+          "sig " + shortSig(sig),
+          "matching " + n.shares.toFixed(0) + " shares against the book",
+          "confirmed · 32/32 slots · finalized",
         ]);
         const p: W.Position = {
           id: curId, ticker: cur!.ticker, side, entry: n.price, size: n.size,
-          shares: n.shares, heat: cur!.heat, openedAt: Date.now(), tx: "0x" + rand(8),
+          shares: n.shares, heat: cur!.heat, openedAt: Date.now(), tx: sig,
         };
         st.positions.unshift(p);
         st.balances.USDC -= n.total;
@@ -601,7 +619,7 @@ export async function runTUI(): Promise<void> {
     if (mode === "wallet") {
       if (str === "f") {
         await broadcast("Requesting airdrop from devnet faucet", [
-          "requesting 1,000 USDC", "airdrop tx 0x" + rand(8), "confirming (32/32 slots)",
+          "requesting 1,000 USDC", "airdrop tx " + shortSig(b58(88)), "confirming (32/32 slots)",
         ]);
         st.balances.USDC += 1000; W.log(st, "faucet", "+1,000 USDC"); W.save(st);
         status = "airdropped 1,000 USDC";
