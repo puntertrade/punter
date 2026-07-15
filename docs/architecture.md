@@ -11,5 +11,5 @@ Feed adapter ──▶ scanner ──▶ heat ──▶ frame ──▶ Market
 ```
 
 - **Core** (`src/`) is pure: given the same feed + resolver, output is identical.
-- **Edges** are injected: the CT feed, the resolver network, the settlement chain.
-- This is what makes the engine testable and chain-independent.
+- **Edges** are injected: the CT feed, the resolver network, the Solana settlement layer.
+- This keeps the core pure and testable; settlement lands on Solana at the edge.

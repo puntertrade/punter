@@ -21,7 +21,7 @@ export interface Market {
   status: MarketStatus;
   yes: number;             // live YES price in cents, 0..100
   volume: number;
-  chain: "solana" | "ethereum" | "bnb" | "base";
+  chain: "solana";
 }
 
 export interface Position {

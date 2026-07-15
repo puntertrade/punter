@@ -93,7 +93,7 @@ store     →  append-only market + position ledger
 | **Early, not fast** | A market opens the moment a rumour moves — the edge is the window before the headline. |
 | **Clean terms** | Every market ships with unambiguous resolution terms. No moved goalposts. |
 | **Non-custodial** | Funds settle to your own wallet through on-chain escrow. |
-| **Any chain** | Solana, Ethereum, BNB Chain or Base. The oracle is chain-independent. |
+| **Solana-native** | Every market settles on Solana — fast finality, low fees, non-custodial. |
 
 ## Roadmap
 
